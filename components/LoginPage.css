@@ -1,0 +1,59 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 150px;
+}
+
+.tabs {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 32px;
+}
+
+.tab,
+.activeTab {
+  padding: 16px 32px;
+  font-size: 16px;
+  cursor: pointer;
+  border: none;
+  border-radius: 8px;
+}
+
+.tab {
+  background-color: #eee;
+}
+
+.activeTab {
+  background-color: #0070f3;
+  color: white;
+}
+
+.formContainer {
+  border: 2px solid #ccc;
+  padding: 48px;
+  border-radius: 16px;
+  min-width: 480px;
+  background-color: #f9f9f9;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.input {
+  padding: 16px;
+  font-size: 16px;
+}
+
+.button {
+  padding: 16px;
+  font-size: 16px;
+  background-color: #0070f3;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
