@@ -14,6 +14,8 @@ export default function GamePage({ name }: { name: string }) {
   const [showWelcome, setShowWelcome] = useState(true);
   const [field, setField] = useState<(null | Plot)[]>(Array(16).fill(null));
   const [selectedMode, setSelectedMode] = useState<'normal' | 'water'>('normal');
+  const [money, setMoney] = useState(100);
+
 
 useEffect(() => {
     const timer = setTimeout(() => {
@@ -45,8 +47,25 @@ useEffect(() => {
 const handlePlotClick = (index: number) => {
     const plot = field[index];
 
+    if (plot?.dead) {
+        const newField = [...field];
+        newField[index] = null;
+        setField(newField);
+        return;
+    }
+
+    if (plot && plot.level === 4 && !plot.dead) {
+        setMoney((prev) => prev + 9);
+        const newField = [...field];
+        newField[index] = null; 
+        setField(newField);
+        return;
+    }
+
     if (selectedMode === 'water') {
       if (plot && plot.level < 4) {
+        if (money < 1) return;
+        setMoney((prev) => prev - 1);
         const newField = [...field];
         newField[index] = {
           ...plot,
@@ -63,8 +82,8 @@ const handlePlotClick = (index: number) => {
                 ...current,
                 level: current.level + 1,
                 plantedAt: Date.now(),
-                };
-                return updated;
+            };
+            return updated;
             }
             return prevField;
           });
@@ -74,6 +93,8 @@ const handlePlotClick = (index: number) => {
     }
 
     if (!plot) {
+      if (money < 5) return;
+      setMoney((prev) => prev - 5);
       const newField = [...field];
       newField[index] = {
         type: 'Daisy',
@@ -88,7 +109,18 @@ const handlePlotClick = (index: number) => {
     <div className="game-wrapper">
       {showWelcome && <h1 className="welcome">Hoş geldin, {name}!</h1>}
 
-      <div className="water-can-menu">
+        <div className="top-ui">
+        <div className="left-ui">
+            <div className="name-bar">👤 {name}</div>
+            <div className="balance-bar">💰 ${money}</div>
+        </div>
+        <div className="right-ui">
+            <div className="timer-bar">⏱️ 00:00</div>
+            <div className="store-bar">🛒 Store</div>
+        </div>
+        </div>
+
+        <div className="water-can-menu">
         <button
           className={`water-button ${selectedMode === 'water' ? 'selected' : ''}`}
           onClick={() =>
