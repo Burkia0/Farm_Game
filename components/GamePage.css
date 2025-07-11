@@ -36,6 +36,7 @@
   margin: 0;
   box-sizing: border-box;
   overflow: hidden;
+  position: relative;
 }
 
 .water-can-menu {
@@ -63,4 +64,24 @@
   display: block;
   font-size: 12px;
   margin-top: 4px;
+}
+
+.circle-timer {
+  position: absolute;
+  top: 5px;        
+  left: 5px;
+  width: 8px;
+  height: 40px;
+  background-color: #e0f7fa;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.fill {
+  background-color: #2196f3;
+  width: 100%;
+  transition: height 0.2s linear;
+  align-self: flex-start; 
 }

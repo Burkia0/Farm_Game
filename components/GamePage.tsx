@@ -7,6 +7,7 @@ type Plot = {
   type: string;
   plantedAt: number;
   level: number;
+  dead?: boolean;
 };
 
 export default function GamePage({ name }: { name: string }) {
@@ -14,12 +15,32 @@ export default function GamePage({ name }: { name: string }) {
   const [field, setField] = useState<(null | Plot)[]>(Array(16).fill(null));
   const [selectedMode, setSelectedMode] = useState<'normal' | 'water'>('normal');
 
-  useEffect(() => {
+useEffect(() => {
     const timer = setTimeout(() => {
-      setShowWelcome(false);
+        setShowWelcome(false);
     }, 3000);
     return () => clearTimeout(timer);
     }, []);
+
+useEffect(() => {
+  const interval = setInterval(() => {
+    setField((prevField) =>
+      prevField.map((plot) => {
+        if (
+          plot &&
+          !plot.dead &&
+          plot.level < 4 &&
+          Date.now() - plot.plantedAt >= 6000
+        ) {
+          return { ...plot, dead: true };
+        }
+        return plot;
+      })
+    );
+  }, 500);
+  return () => clearInterval(interval);
+}, []);
+
 
 const handlePlotClick = (index: number) => {
     const plot = field[index];
@@ -80,14 +101,33 @@ const handlePlotClick = (index: number) => {
       </div>
 
       <div className="field-grid">
+
         {field.map((plot, i) => (
-          <div key={i} className="field" onClick={() => handlePlotClick(i)}>
+        <div key={i} className="field" onClick={() => handlePlotClick(i)}>
             {plot?.type === 'Daisy' && (
-              <span>
-                🌼 <small>{plot.level}</small>
-              </span>
+            <>
+                <span className="plot-content">
+                🌼 {plot.dead ? 'dead' : plot.level}
+                </span>
+                {!plot.dead && plot.level < 4 && (
+                <div className="circle-timer">
+                    <div
+                    className="fill"
+                    style={{
+                        height: `${
+                        Math.max(
+                            0,
+                            100 -
+                            ((Date.now() - plot.plantedAt) / 6000) * 100
+                        )
+                        }%`,
+                    }}
+                    ></div>
+                </div>
+                )}
+            </>
             )}
-          </div>
+        </div>
         ))}
       </div>
     </div>
