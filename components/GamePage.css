@@ -37,3 +37,30 @@
   box-sizing: border-box;
   overflow: hidden;
 }
+
+.water-can-menu {
+  position: absolute;
+  top: 200px;
+  right: 150px;
+  z-index: 10;
+}
+
+.water-button {
+  font-size: 24px;
+  padding: 8px 12px;
+  border: 2px solid #1976d2;
+  border-radius: 8px;
+  background-color: white;
+  cursor: pointer;
+}
+
+.water-button.selected {
+  background-color: #bbdefb;
+  border-color: #0d47a1;
+}
+
+.tooltip {
+  display: block;
+  font-size: 12px;
+  margin-top: 4px;
+}
