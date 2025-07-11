@@ -15,6 +15,25 @@ export default function GamePage({ name }: { name: string }) {
   const [field, setField] = useState<(null | Plot)[]>(Array(16).fill(null));
   const [selectedMode, setSelectedMode] = useState<'normal' | 'water'>('normal');
   const [money, setMoney] = useState(100);
+    const [inventory, setInventory] = useState({
+     Daisy: 0,
+    Rose: 0,
+     Tulip: 0,
+    });
+    const [showStore, setShowStore] = useState(false);
+
+    const handlePurchase = (flower: 'Daisy' | 'Rose' | 'Tulip', price: number) => {
+    if (money < price) {
+        alert("No enough money!");
+        return;
+    }
+
+    setMoney((prev) => prev - price);
+    setInventory((prev) => ({
+        ...prev,
+        [flower]: prev[flower] + 1,
+    }));
+    };
 
 
 useEffect(() => {
@@ -93,15 +112,27 @@ const handlePlotClick = (index: number) => {
     }
 
     if (!plot) {
-      if (money < 5) return;
-      setMoney((prev) => prev - 5);
-      const newField = [...field];
-      newField[index] = {
-        type: 'Daisy',
+    let flowerToPlant: 'Daisy' | 'Rose' | 'Tulip' | null = null;
+
+    if (inventory.Daisy > 0) flowerToPlant = 'Daisy';
+    else if (inventory.Rose > 0) flowerToPlant = 'Rose';
+    else if (inventory.Tulip > 0) flowerToPlant = 'Tulip';
+    else return; 
+
+    const newField = [...field];
+    newField[index] = {
+        type: flowerToPlant,
         plantedAt: Date.now(),
         level: 0,
-      };
-      setField(newField);
+    };
+    setField(newField);
+
+    setInventory((prev) => ({
+        ...prev,
+        [flowerToPlant!]: prev[flowerToPlant!] - 1,
+    }));
+
+    return;
     }
   };
 
@@ -116,7 +147,9 @@ const handlePlotClick = (index: number) => {
         </div>
         <div className="right-ui">
             <div className="timer-bar">⏱️ 00:00</div>
-            <div className="store-bar">🛒 Store</div>
+            <div className="store-bar" onClick={() => setShowStore(true)}>
+            🛒 Store
+            </div>
         </div>
         </div>
 
@@ -136,11 +169,15 @@ const handlePlotClick = (index: number) => {
 
         {field.map((plot, i) => (
         <div key={i} className="field" onClick={() => handlePlotClick(i)}>
-            {plot?.type === 'Daisy' && (
+            {plot && (
             <>
                 <span className="plot-content">
-                🌼 {plot.dead ? 'dead' : plot.level}
+                {plot.type === 'Daisy' && '🌼'}
+                {plot.type === 'Rose' && '🌹'}
+                {plot.type === 'Tulip' && '🌷'}{' '}
+                {plot.dead ? 'dead' : plot.level}
                 </span>
+
                 {!plot.dead && plot.level < 4 && (
                 <div className="circle-timer">
                     <div
@@ -149,8 +186,7 @@ const handlePlotClick = (index: number) => {
                         height: `${
                         Math.max(
                             0,
-                            100 -
-                            ((Date.now() - plot.plantedAt) / 6000) * 100
+                            100 - ((Date.now() - plot.plantedAt) / 6000) * 100
                         )
                         }%`,
                     }}
@@ -161,7 +197,25 @@ const handlePlotClick = (index: number) => {
             )}
         </div>
         ))}
+
       </div>
+
+        {showStore && (
+        <div className="store-popup">
+            <h3>🌸 Store</h3>
+            <div className="store-item" onClick={() => handlePurchase('Daisy', 5)}>
+            🌼 Daisy – $5 (you have: {inventory.Daisy})
+            </div>
+            <div className="store-item" onClick={() => handlePurchase('Rose', 12)}>
+            🌹 Rose – $12 (you have: {inventory.Rose})
+            </div>
+            <div className="store-item" onClick={() => handlePurchase('Tulip', 20)}>
+            🌷 Tulip – $20 (you have: {inventory.Tulip})
+            </div>
+            <button className="close-btn" onClick={() => setShowStore(false)}>Kapat</button>
+        </div>
+        )}
+
     </div>
   );
 }
